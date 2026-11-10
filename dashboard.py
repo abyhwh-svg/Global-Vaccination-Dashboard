@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
+import plotly.express as px
 
 # Configure dashboard
 st.set_page_config(
@@ -364,3 +365,87 @@ st.line_chart(
 
 st.subheader("📋 Filtered Records")
 st.dataframe(filtered_data, use_container_width=True)
+
+# Interactive world bubble map
+st.divider()
+st.subheader("🌍 Global Disease Cases Map")
+
+map_data = df.dropna(
+    subset=["code", "cases", "year","disease"]
+).copy()
+
+map_data["cases"] = pd.to_numeric(
+    map_data["cases"], errors="coerce"
+)
+
+map_data["year"] = pd.to_numeric(
+    map_data["year"], errors="coerce"
+)
+
+map_data = map_data.dropna(
+    subset=["cases", "year"]
+)
+
+# Disease filter for the map
+map_diseases = sorted(map_data["disease"].dropna().unique())
+
+map_disease = st.selectbox(
+    "Select Disease for World Map",
+    ["All Diseases"] + map_diseases
+)
+
+if map_disease != "All Diseases":
+    map_data = map_data[
+        map_data["disease"] == map_disease
+    ]
+    # Year filter for the world map
+st.write("TEST: World map code reached")
+map_years = sorted(map_data["year"].dropna().unique().astype(int))
+
+map_year = st.selectbox(
+    "Select Year for World Map",
+    ["All Years"] + map_years
+)
+
+if map_year != "All Years":
+    map_data = map_data[
+        map_data["year"] == map_year
+        ]
+# Total reported cases by country
+country_cases = (
+    map_data.groupby(["code","disease"], as_index=False)["cases"]
+    .sum()
+)
+
+country_cases = country_cases[
+    country_cases["cases"] > 0
+    ]
+# Prepare country codes for the geographic map
+country_cases["code"] = (
+    country_cases["code"].astype(str).str.upper().str.strip()
+)
+# Interactive world map
+disease_colors = {
+disease: px.colors.qualitative.Alphabet[i % 26]
+for i, disease in enumerate(sorted(df["disease"].dropna().unique()))
+}
+fig = px.scatter_geo(
+country_cases,
+locations="code",
+locationmode="ISO-3",
+size="cases",
+color="disease",
+color_discrete_map=disease_colors,
+hover_name="code",
+hover_data={"cases": ":,.0f"},
+projection="natural earth",
+title="Reported Disease Cases by Country",
+size_max=45
+)
+
+fig.update_layout(
+height=550,
+margin=dict(l=0, r=0, t=50, b=0)
+)
+
+st.plotly_chart(fig, use_container_width=True)
