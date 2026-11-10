@@ -442,9 +442,10 @@ country_cases["code"] = (
 )
 # Interactive world map
 disease_colors = {
-"#3498db"
-for i, disease in enumerate(sorted(country_cases["disease"].dropna().unique()))
+    disease: px.colors.qualitative.Alphabet[i % 26]
+    for i, disease in enumerate(sorted(country_cases["disease"].dropna().unique()))
 }
+
 fig = px.scatter_geo(
 country_cases,
 locations="code",
