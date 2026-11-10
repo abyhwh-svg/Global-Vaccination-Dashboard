@@ -29,11 +29,13 @@ def load_data():
 
 df = load_data()
 
-df = load_data()
-
 # Load vaccination coverage data
 coverage_path = Path(__file__).parent / "datasets" / "coverage-data.xlsx"
-coverage_df = pd.read_excel(coverage_path)
+@st.cache_data
+def load_coverage_data():
+    return pd.read_excel(coverage_path)
+
+coverage_df = load_coverage_data()
 
 # Preview vaccination coverage data
 st.subheader("💉 Vaccination Coverage Dataset")
@@ -345,7 +347,7 @@ else:
         "No reported case data available for this selection."
     )
 st.subheader("🔎 Data Preview")
-st.dataframe(filtered_data.head(20), use_container_width=True)
+st.dataframe(filtered_data.head(20), use_container_width="strech")
 st.subheader("📈 Disease Trends")
 
 st.write(
@@ -364,7 +366,7 @@ st.line_chart(
 )
 
 st.subheader("📋 Filtered Records")
-st.dataframe(filtered_data, use_container_width=True)
+st.dataframe(filtered_data, use_container_width="strech")
 
 # Interactive world bubble map
 st.divider()
@@ -441,7 +443,7 @@ country_cases["code"] = (
 # Interactive world map
 disease_colors = {
 disease: px.colors.qualitative.Alphabet[i % 26]
-for i, disease in enumerate(sorted(df["disease"].dropna().unique()))
+for i, disease in enumerate(sorted(country_cases["disease"].dropna().unique()))
 }
 fig = px.scatter_geo(
 country_cases,
@@ -452,7 +454,7 @@ color="disease",
 color_discrete_map=disease_colors,
 hover_name="code",
 hover_data={"cases": ":,.0f"},
-projection="natural earth",
+projection="equirectangular",
 title="Reported Disease Cases by Country",
 size_max=45
 )
@@ -462,4 +464,4 @@ height=550,
 margin=dict(l=0, r=0, t=50, b=0)
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.altair_chart(fig, use_container_width="strech")
