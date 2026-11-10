@@ -442,7 +442,7 @@ country_cases["code"] = (
 )
 # Interactive world map
 disease_colors = {
-disease: px.colors.qualitative.Alphabet[i % 26]
+"#3498db"
 for i, disease in enumerate(sorted(country_cases["disease"].dropna().unique()))
 }
 fig = px.scatter_geo(
@@ -464,4 +464,4 @@ height=550,
 margin=dict(l=0, r=0, t=50, b=0)
 )
 
-st.altair_chart(fig, use_container_width="strech")
+st.altair_chart(fig, width="strech")
