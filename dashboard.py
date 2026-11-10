@@ -385,33 +385,47 @@ map_data["year"] = pd.to_numeric(
 map_data = map_data.dropna(
     subset=["cases", "year"]
 )
-
+col_disease, col_year, col_location = st.columns(3)
 # Disease filter for the map
 map_diseases = sorted(map_data["disease"].dropna().unique())
 
-map_disease = st.selectbox(
+map_disease = (
+col_disease.multiselect(
     "Select Disease for World Map",
-    ["All Diseases"] + map_diseases
-)
+     map_diseases
+))
 
-if map_disease != "All Diseases":
+if map_disease:
     map_data = map_data[
-        map_data["disease"] == map_disease
+        map_data["disease"].isin(map_disease)
     ]
     # Year filter for the world map
-st.write("TEST: World map code reached")
+
 map_years = sorted(map_data["year"].dropna().unique().astype(int))
 
-map_year = st.selectbox(
+map_year = col_year.multiselect(
     "Select Year for World Map",
-    ["All Years"] + map_years
+     map_years
 )
 
-if map_year != "All Years":
+if map_year:
     map_data = map_data[
-        map_data["year"] == map_year
+        map_data["year"].isin(map_year)
         ]
 # Total reported cases by country
+# Location filter for the world map
+map_locations = sorted(map_data["name"].dropna().unique())
+
+map_location = (
+col_location.multiselect(
+    "Select Location for World Map",
+     map_locations
+))
+
+if map_location :
+    map_data = map_data[
+        map_data["name"] .isin (map_location)
+    ]
 country_cases = (
     map_data.groupby(["code","disease"], as_index=False)["cases"]
     .sum()
