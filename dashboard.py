@@ -465,4 +465,4 @@ height=550,
 margin=dict(l=0, r=0, t=50, b=0)
 )
 
-st.altair_chart(fig, width="strech")
+st.plotly_chart(fig, use_container_width="True")
