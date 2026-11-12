@@ -3,6 +3,62 @@ import pandas as pd
 from pathlib import Path
 import plotly.express as px
 
+# Illuminated globe dashboard styling
+st.markdown("""
+<style>
+.stApp {
+    background:
+        radial-gradient(ellipse at 50% 35%,
+            #12365b 0%,
+            #07182d 45%,
+            #020712 100%);
+    color: #eaf5ff;
+}
+
+h1, h2, h3 {
+    color: #eaf5ff !important;
+    text-shadow: 0 0 12px rgba(55, 175, 255, 0.25);
+}
+
+/* Soft blue glow beneath the globe */
+.globe-platform {
+    width: min(80%, 600px);
+    height: 45px;
+    margin: -12px auto 35px;
+    border: 2px solid rgba(0, 195, 255, 0.7);
+    border-radius: 50%;
+    background: radial-gradient(
+        ellipse,
+        rgba(0, 180, 255, 0.20),
+        transparent 70%
+    );
+    box-shadow:
+        0 0 15px rgba(0, 180, 255, 0.6),
+        0 0 35px rgba(0, 130, 255, 0.3),
+        inset 0 0 20px rgba(0, 180, 255, 0.4);
+    animation: globe-pulse 4s ease-in-out infinite;
+}
+
+@keyframes globe-pulse {
+    0%, 100% {
+        opacity: 0.45;
+        transform: scale(0.98);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.02);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .globe-platform {
+        animation: none;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # Configure dashboard
 st.set_page_config(
     page_title="Global Vaccination Dashboard",
@@ -466,3 +522,7 @@ margin=dict(l=0, r=0, t=50, b=0)
 )
 
 st.plotly_chart(fig, use_container_width="True")
+st.markdown(
+    '<div class="globe-platform"></div>',
+    unsafe_allow_html=True
+)
